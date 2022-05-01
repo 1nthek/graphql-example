@@ -69,8 +69,6 @@ const MsgList = ({ smsgs, users }: { smsgs: Message[]; users: Users }) => {
 
   useEffect(() => {
     if (intersecting && hasNext) getMessages();
-    console.log("intersecting", intersecting);
-    console.log("hasNext", hasNext);
   }, [intersecting]);
 
   return (
@@ -90,7 +88,7 @@ const MsgList = ({ smsgs, users }: { smsgs: Message[]; users: Users }) => {
           />
         ))}
       </ul>
-      <div ref={fetchMoreEl} />
+      <div ref={fetchMoreEl} style={{ height: 100 }} />
     </>
   );
 };
