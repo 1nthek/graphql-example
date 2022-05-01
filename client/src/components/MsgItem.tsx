@@ -1,28 +1,30 @@
-import { SetStateAction } from "react";
+import { User } from "../types";
 import MsgInput from "./MsgInput";
 
 const MsgItem = ({
   id,
-  userId,
   timestamp,
   text,
+  isEditing,
+  myId,
+  user,
   onUpdate,
   onDelete,
-  isEditing,
   startEdit,
 }: {
-  id: number;
-  userId: string;
+  id: string;
   timestamp: number;
   text: string;
-  onUpdate: (text: string, id: number) => void;
-  onDelete: (id: number) => void;
   isEditing: boolean;
-  startEdit: (value: SetStateAction<number | null>) => void;
+  myId: string;
+  user: User;
+  onUpdate: (text: string, id?: string) => void;
+  onDelete: () => void;
+  startEdit: () => void;
 }) => (
   <li className="messages__item">
     <h3>
-      {userId}
+      {user.nickname}{" "}
       <sub>
         {new Date(timestamp).toLocaleString("ko-KR", {
           year: "numeric",
@@ -37,16 +39,18 @@ const MsgItem = ({
 
     {isEditing ? (
       <>
-        <MsgInput mutate={onUpdate} />
+        <MsgInput mutate={onUpdate} text={text} id={id} />
       </>
     ) : (
       text
     )}
 
-    <div className="messages__buttons">
-      <button onClick={() => startEdit(0)}>수정</button>
-      <button onClick={() => onDelete(0)}>삭제</button>
-    </div>
+    {myId === user.id && (
+      <div className="messages__buttons">
+        <button onClick={startEdit}>수정</button>
+        <button onClick={onDelete}>삭제</button>
+      </div>
+    )}
   </li>
 );
 

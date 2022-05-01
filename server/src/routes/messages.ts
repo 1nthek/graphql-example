@@ -1,22 +1,24 @@
 import { v4 } from "uuid";
-import { readDB, writeDB } from "../dbController.js";
+import { readDB, writeDB } from "../dbController";
+import { DBField, CustomRoute, Message, METHOD } from "../types";
 
-const getMsgs = () => readDB("messages");
-const setMsgs = (data) => writeDB("messages", data);
+const getMsgs = (): Message[] => readDB(DBField.MESSAGES);
+const setMsgs = (data: Message[]) => writeDB(DBField.MESSAGES, data);
 
-const messagesRoute = [
+const messagesRoute: CustomRoute[] = [
   {
     // GET MESSAGES
-    method: "get",
+    method: METHOD.GET,
     route: "/messages",
-    handler: (req, res) => {
+    handler: ({ query: { cursor = "" } }, res) => {
       const msgs = getMsgs();
-      res.send(msgs);
+      const fromIndex = msgs.findIndex((msg) => msg.id === cursor) + 1;
+      res.send(msgs.slice(fromIndex, fromIndex + 15));
     },
   },
   {
     // GET MESSAGE
-    method: "get",
+    method: METHOD.GET,
     route: "/messages/:id",
     handler: ({ params: { id } }, res) => {
       try {
@@ -31,24 +33,29 @@ const messagesRoute = [
   },
   {
     // CREATE MESSAGE
-    method: "post",
+    method: METHOD.POST,
     route: "/messages",
     handler: ({ body }, res) => {
-      const msgs = getMsgs();
-      const newMsg = {
-        id: v4(),
-        text: body.text,
-        userId: body.userId,
-        timestamp: Date.now(),
-      };
-      msgs.unshift(newMsg);
-      setMsgs(msgs);
-      res.send(newMsg);
+      try {
+        if (!body.userId) throw Error("no userId");
+        const msgs = getMsgs();
+        const newMsg = {
+          id: v4(),
+          text: body.text,
+          userId: body.userId,
+          timestamp: Date.now(),
+        };
+        msgs.unshift(newMsg);
+        setMsgs(msgs);
+        res.send(newMsg);
+      } catch (err) {
+        res.status(500).send({ error: err });
+      }
     },
   },
   {
     // UPDATE MESSAGE
-    method: "put",
+    method: METHOD.PUT,
     route: "/messages/:id",
     handler: ({ body, params: { id } }, res) => {
       try {
@@ -69,15 +76,14 @@ const messagesRoute = [
   },
   {
     // DELETE MESSAGE
-    method: "delete",
+    method: METHOD.DELETE,
     route: "/messages/:id",
-    handler: ({ body, params: { id } }, res) => {
+    handler: ({ params: { id }, query: { userId } }, res) => {
       try {
         const msgs = getMsgs();
         const targetIndex = msgs.findIndex((msg) => msg.id === id);
         if (targetIndex < 0) throw "메시지가 없습니다.";
-        if (msgs[targetIndex].userId !== body.userId)
-          throw "사용자가 다릅니다.";
+        if (msgs[targetIndex].userId !== userId) throw "사용자가 다릅니다.";
 
         msgs.splice(targetIndex, 1);
         setMsgs(msgs);
