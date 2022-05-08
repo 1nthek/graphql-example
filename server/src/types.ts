@@ -33,3 +33,18 @@ export interface User {
 export interface Users {
   [key: string]: User;
 }
+
+export interface Resolver {
+  [key: string]: {
+    [key: string]: (
+      parent: any,
+      variables: { [key: string]: any },
+      context: {
+        db: {
+          messages: Message[];
+          users: { [key: string]: User };
+        };
+      }
+    ) => any;
+  };
+}
