@@ -54,9 +54,9 @@ const messageResolver: Resolver = {
       return id;
     },
   },
-  // Message: {
-  //   user: (msg, args, { db }) => db.users[msg.userId],
-  // },
+  Message: {
+    user: (msg, args, { db }) => db.users[msg.userId],
+  },
 };
 
 export default messageResolver;

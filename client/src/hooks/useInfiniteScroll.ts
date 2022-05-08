@@ -15,6 +15,7 @@ const useInfiniteScroll = (targetEl: RefObject<HTMLElement>) => {
 
   useEffect(() => {
     if (targetEl.current) getObserver().observe(targetEl.current);
+
     return () => {
       getObserver().disconnect();
     };

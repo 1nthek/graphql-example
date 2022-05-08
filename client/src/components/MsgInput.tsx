@@ -1,23 +1,26 @@
 import { FormEvent, useRef } from "react";
+import { Mutate } from "../types";
 
 const MsgInput = ({
   mutate,
   text = "",
   id = undefined,
 }: {
-  mutate: (text: string, id?: string) => void;
+  mutate: Mutate;
   text?: string;
   id?: string;
 }) => {
   const textRef = useRef<HTMLTextAreaElement>(null);
+
   const onSubmit = (e: FormEvent) => {
+    if (!textRef.current) return;
     e.preventDefault();
     e.stopPropagation();
-    if (!textRef.current) return;
     const text = textRef.current.value;
     textRef.current.value = "";
-    mutate(text, id);
+    mutate({ text, id });
   };
+
   return (
     <form className="messages__input" onSubmit={onSubmit}>
       <textarea

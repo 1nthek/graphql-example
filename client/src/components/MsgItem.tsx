@@ -1,26 +1,26 @@
-import { User } from "../types";
+import { Mutate, User } from "../types";
 import MsgInput from "./MsgInput";
 
 const MsgItem = ({
   id,
   timestamp,
   text,
-  isEditing,
-  myId,
-  user,
   onUpdate,
   onDelete,
+  isEditing,
   startEdit,
+  myId,
+  user,
 }: {
   id: string;
   timestamp: number;
   text: string;
-  isEditing: boolean;
   myId: string;
   user: User;
-  onUpdate: (text: string, id?: string) => void;
-  onDelete: () => void;
+  isEditing: boolean;
+  onUpdate: Mutate;
   startEdit: () => void;
+  onDelete: () => void;
 }) => (
   <li className="messages__item">
     <h3>
